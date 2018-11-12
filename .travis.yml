@@ -10,6 +10,5 @@ install:
   - sudo pip install docker-compose
 
 script:
-  - cd docker
   - docker-compose build
   - docker-compose run --rm tests
