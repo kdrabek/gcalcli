@@ -1,0 +1,14 @@
+version: '3'
+services:
+
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      # Secrets should be passed in here, ENV is just as an example
+      - ENV=dev
+    container_name: gcalcli-tests
+    volumes:
+      - ./:/usr/src/app/
+    command: bash -c "pip install -r requirements.dev.txt && python setup.py test"
