@@ -56,10 +56,7 @@ def setup_authentication():
     token = flow.fetch_token(code=code)
     save_file(TOKEN_PATH, json.dumps(token))
 
-    credentials = create_credentials(token, flow)
-
-    calendar = build('calendar', 'v3', credentials=credentials)
-    calendar.events().list(calendarId='primary').execute()
+    return create_credentials(token, flow)
 
 
 def is_authentication_setup():
