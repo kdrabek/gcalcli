@@ -11,4 +11,4 @@ install:
 
 script:
   - docker-compose build
-  - docker-compose run --rm tests
+  - docker-compose run --rm tests-pipeline

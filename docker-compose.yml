@@ -11,4 +11,17 @@ services:
     container_name: gcalcli-tests
     volumes:
       - ./:/usr/src/app/
+      - ${HOME}/.gcalcli:/root/.gcalcli
+    command: bash -c "pip install -r requirements.dev.txt && python setup.py test"
+
+  tests-pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      # Secrets should be passed in here, ENV is just as an example
+      - ENV=dev
+    container_name: gcalcli-tests
+    volumes:
+      - ./:/usr/src/app/
     command: bash -c "pip install -r requirements.dev.txt && python setup.py test"
