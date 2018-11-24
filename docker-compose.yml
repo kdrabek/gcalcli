@@ -11,4 +11,5 @@ services:
     container_name: gcalcli-tests
     volumes:
       - ./:/usr/src/app/
+      - ${HOME}/.gcalcli:/root/.gcalcli
     command: bash -c "pip install -r requirements.dev.txt && python setup.py test"
