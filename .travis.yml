@@ -10,5 +10,5 @@ install:
   - sudo pip install docker-compose
 
 script:
-  - docker-compose build
+  - docker-compose build tests-pipeline
   - docker-compose run --rm tests-pipeline
