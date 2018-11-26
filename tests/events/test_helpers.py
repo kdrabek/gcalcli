@@ -1,6 +1,8 @@
 import pytest
 
 from click import exceptions
+from datetime import datetime
+from dateparser import parse
 
 from gcalcli.events.helpers import split_by, to_table, validate_date
 
@@ -28,15 +30,16 @@ def test_to_table(parsed_event, ascii_table):
 
 
 def test_validate_date():
-    result = validate_date(None, 'start','January 2018')
-    assert result == '2018-01-01T00:00:00+0000'
+    result = validate_date('January 2018')
+    assert isinstance(result, datetime)
+    assert str(result) == '2018-01-01 00:00:00+00:00'
 
 
 def test_validate_date_unknown_lang():
     with pytest.raises(exceptions.BadParameter):
-        result = validate_date(None, 'start','abcd xyz')
+        result = validate_date('abcd xyz')
 
 
 def test_validate_date_incorrect_date():
     with pytest.raises(exceptions.BadParameter):
-        result = validate_date(None, 'start','32 Nov 2018')
+        result = validate_date('32 Nov 2018')

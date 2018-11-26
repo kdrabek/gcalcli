@@ -3,12 +3,11 @@ PRIMARY_CALENDAR_ID = 'primary'
 
 def get_events(client, opts):
     title_filter = opts.pop('filter')
-    opts['calendarId'] = PRIMARY_CALENDAR_ID
-
     page_token = None
     while True:
         opts['pageToken'] = page_token
-        events = client.events().list(**opts).execute()
+        events = client.events().list(
+            calendarId=PRIMARY_CALENDAR_ID, **opts).execute()
         if not events:
             return []
 
@@ -25,4 +24,12 @@ def get_events(client, opts):
 
 
 def create_event(client, opts):
-    pass
+    opts['calendarId'] = PRIMARY_CALENDAR_ID
+    try:
+        event = client.events().insert(
+            calendarId=PRIMARY_CALENDAR_ID, body=opts).execute()
+    except Exception as e:
+        print("Exception occurred", e)
+        return None
+    else:
+        return event

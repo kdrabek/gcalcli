@@ -1,5 +1,5 @@
-from glom import Coalesce, Call, T
-from gcalcli.events.helpers import split_by
+from gcalcli.events.helpers import split_by, stringify, validate_date
+from toolz.dicttoolz import get_in
 
 
 EVENT_KIND_MAPPING = {
@@ -7,12 +7,27 @@ EVENT_KIND_MAPPING = {
 }
 
 
-event = {
-    'creator': 'creator.displayName',
-    'status': 'status',
-    'summary': (Coalesce('summary', default=''), split_by),
-    'start': Coalesce('start.date', 'start.dateTime'),
-    'end': Coalesce('end.date', 'end.dateTime'),
-    'kind': ('kind', lambda e: EVENT_KIND_MAPPING.get(e, 'unknown')),
-    'all_day': lambda d: 'Yes' if d['start'].get('date') else 'No'
-}
+def parse_events_list(events):
+    return [
+        {
+            'creator': get_in(['creator', 'displayName'], event),
+            'status': event.get('status'),
+            'summary': split_by(event.get('summary', '')),
+            'start': event['start'].get('date') or event['start'].get('dateTime'),
+            'end': event['end'].get('date') or event['end'].get('dateTime'),
+            'kind': EVENT_KIND_MAPPING.get(event.get('kind'), 'unknown'),
+            'all_day': 'Yes' if event['start'].get('date') else 'No'
+        } for event in events
+    ]
+
+
+def serialize_create_event(event):
+    return {
+        'start': event['start'],
+        'end': event['end'],
+        'status': event['status'],
+        'sendUpdates': event['sendUpdates'],
+        'summary': event['summary'],
+        'attendees': [{'email': e} for e in event['attendees']],
+        'reminders': {'userDefault': True}
+    }

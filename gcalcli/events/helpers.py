@@ -21,15 +21,34 @@ def split_by(s, len=45):
     return '\n'.join(wrap(s, len))
 
 
-def validate_date(ctx, param, value):
-    try:
-        parsed = parse(value, settings={
-            'RETURN_AS_TIMEZONE_AWARE': True,
-            'PREFER_DAY_OF_MONTH': 'first',
-            'DATE_ORDER': 'DMY'
-        })
-        return parsed.strftime("%Y-%m-%dT%H:%M:%S%z")
-    except (ValueError, AttributeError):
-        # value error -> unknown lang
-        # attribute error -> parse returns None (cannot parse)
+def is_all_day(d):
+    # this is a bit naive approach, because it will fail when someone wants
+    # to create an event from midnight to midnight the next day
+    return d.hour == 0 and d.minute == 0
+
+
+def stringify(d, add_timezone=False):
+    result = {}
+
+    if is_all_day(d):
+        result['date'] = d.strftime("%Y-%m-%d")
+    else:
+        result['dateTime'] = d.strftime("%Y-%m-%dT%H:%M:%S%z")
+
+    if add_timezone:
+        result['timezone'] = d.tzinfo.zone
+
+    return result
+
+def stringify2(d):
+    return d.strftime("%Y-%m-%dT%H:%M:%S%z")
+
+def validate_date(value):
+    parsed = parse(value, settings={
+        'RETURN_AS_TIMEZONE_AWARE': True,
+        'PREFER_DAY_OF_MONTH': 'first',
+        'DATE_ORDER': 'DMY'
+    })
+    if parsed is None:
         raise click.BadParameter(value)
+    return parsed

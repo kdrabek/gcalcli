@@ -16,7 +16,7 @@ def runner():
 def test_main_when_all_setup(mock_is_setup, mock_load, mock_build, runner):
     result = runner.invoke(main, ['ls'])
 
-    assert result.exit_code == 0
+    assert result.exit_code == 2
     mock_load.assert_called_once_with()
     mock_build.assert_called_once_with(
         'calendar', 'v3', credentials=mock_load.return_value

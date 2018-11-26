@@ -1,11 +1,10 @@
 import pytest
 
-from glom import glom
 from gcalcli.events import specs
 
 
 def test_event_parse_result(event_json):
-    assert glom(event_json, specs.event) == {
+    assert specs.parse_events_list([event_json]) == [{
         'all_day': 'No',
         'creator': 'John Smith',
         'end': '2018-11-01T22:00:00+01:00',
@@ -13,7 +12,7 @@ def test_event_parse_result(event_json):
         'start': '2018-11-01T21:00:00+01:00',
         'status': 'tentative',
         'summary': 'Summary'
-    }
+    }]
 
 
 @pytest.mark.parametrize('payload, result', [
@@ -24,7 +23,7 @@ def test_event_parse_result_dates(payload, result, event_json):
     event_json['start'] = payload
     event_json['end'] = payload
 
-    parsed = glom(event_json, specs.event)
+    parsed = specs.parse_events_list([event_json])
 
-    assert parsed['start'] == result
-    assert parsed['end'] == result
+    assert parsed[0]['start'] == result
+    assert parsed[0]['end'] == result
