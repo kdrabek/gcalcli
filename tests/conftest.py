@@ -5,7 +5,6 @@ from terminaltables import AsciiTable
 from gcalcli.events.helpers import to_table, validate_date, HEADERS
 
 
-
 @pytest.fixture
 def event_json():
     return {
@@ -19,12 +18,16 @@ def event_json():
         'created': '2018-11-02T16:53:34.000Z',
         'creator': {
             'displayName': 'John Smith',
-             'email': 'email@email.com',
-             'self': True
+            'email': 'email@email.com',
+            'self': True
         },
         'end': {'dateTime': '2018-11-01T22:00:00+01:00'},
         'etag': '"2724486429534000"',
-        'extendedProperties': {'shared': {'CalendarSyncAdapter#originalTimezone': 'Europe/Warsaw'}},
+        'extendedProperties': {
+            'shared': {
+                'CalendarSyncAdapter#originalTimezone': 'Europe/Warsaw'
+            }
+        },
         'htmlLink': 'https://www.google.com/calendar/event?eid=123456',
         'iCalUID': 'icalID@google.com',
         'id': 'some-id',
@@ -32,8 +35,8 @@ def event_json():
         'organizer': {
             'displayName': 'John Smith',
             'email': 'email@email.com',
-               'self': True
-            },
+            'self': True
+        },
         'reminders': {'useDefault': True},
         'sequence': 1,
         'start': {'dateTime': '2018-11-01T21:00:00+01:00'},

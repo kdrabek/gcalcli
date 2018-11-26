@@ -65,7 +65,8 @@ def is_authentication_setup():
     try:
         token = open_file(CREDENTIALS_PATH, json.loads)
         credentials = open_file(TOKEN_PATH)
-    except:
+    except Exception as e:
+        print(e)
         return False
 
     return token is not None and credentials is not None

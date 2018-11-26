@@ -13,7 +13,9 @@ def parse_events_list(events):
             'creator': get_in(['creator', 'displayName'], event),
             'status': event.get('status'),
             'summary': split_by(event.get('summary', '')),
-            'start': event['start'].get('date') or event['start'].get('dateTime'),
+            'start': (
+                event['start'].get('date') or event['start'].get('dateTime')
+            ),
             'end': event['end'].get('date') or event['end'].get('dateTime'),
             'kind': EVENT_KIND_MAPPING.get(event.get('kind'), 'unknown'),
             'all_day': 'Yes' if event['start'].get('date') else 'No'

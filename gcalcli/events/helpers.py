@@ -40,8 +40,10 @@ def stringify(d, add_timezone=False):
 
     return result
 
+
 def stringify2(d):
     return d.strftime("%Y-%m-%dT%H:%M:%S%z")
+
 
 def validate_date(value):
     parsed = parse(value, settings={

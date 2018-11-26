@@ -6,7 +6,7 @@ from gcalcli.events.helpers import validate_date, stringify2
 
 @pytest.fixture
 def mock_client(event_json):
-    resp ={'items': [event_json]}
+    resp = {'items': [event_json]}
     client = MagicMock()
     client.events.return_value.list.return_value.execute.return_value = resp
     return client
@@ -42,7 +42,7 @@ def test_get_events_with_valid_title_filter(mock_client, event_json, flags):
     assert_mock_calls(mock_client, expected_count=1)
 
 
-def test_get_events_with_invalid_title_filter(mock_client, event_json,flags):
+def test_get_events_with_invalid_title_filter(mock_client, event_json, flags):
     flags['filter'] = 'some title'
     events = get_events(mock_client, flags)
 
@@ -51,7 +51,7 @@ def test_get_events_with_invalid_title_filter(mock_client, event_json,flags):
 
 
 def test_get_events_calls_next_page(mock_client, event_json, flags):
-    resp_with_token ={'items': [event_json], 'nextPageToken': 'token'}
+    resp_with_token = {'items': [event_json], 'nextPageToken': 'token'}
     resp = {'items': [event_json]}
     mock_client.events.return_value.list.return_value.execute.side_effect = [
         resp_with_token, resp

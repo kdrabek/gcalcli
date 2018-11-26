@@ -5,7 +5,8 @@ from googleapiclient.discovery import build
 from gcalcli.authorization import (
     is_authentication_setup, load_credentials, setup_authentication)
 from gcalcli.events import specs
-from gcalcli.events.helpers import to_table, validate_date, stringify, stringify2
+from gcalcli.events.helpers import (
+    to_table, validate_date, stringify, stringify2)
 from gcalcli.events.api import get_events, create_event
 
 
@@ -18,7 +19,10 @@ def main(ctx):
         ctx.obj = calendar
 
     if not is_authentication_setup() and ctx.invoked_subcommand != 'configure':
-        click.echo('Looks like the app is not configured. Please run $ gcalcli configure')
+        click.echo(
+            'Looks like the app is not configured.'
+            'Please run "gcalcli configure"'
+        )
         ctx.exit(code=1)
 
 
@@ -51,15 +55,22 @@ def ls(calendar, start, end, filter_, show_deleted):
     click.echo(to_table(parsed))
 
 
-
 @click.command()
 @click.pass_obj
 @click.option('--start', '-s', required=True, type=str)
 @click.option('--end', '-e', required=True, type=str)
 @click.option('--title', '-t', required=True)
 @click.option('--attendees', '-a', required=False, multiple=True)
-@click.option('--status', type=click.Choice(['confirmed', 'tentative', 'cancelled']), default='confirmed')
-@click.option('--send-updates', type=click.Choice(['all', 'none']), default='none')
+@click.option(
+    '--status',
+    type=click.Choice(['confirmed', 'tentative', 'cancelled']),
+    default='confirmed'
+)
+@click.option(
+    '--send-updates',
+    type=click.Choice(['all', 'none']),
+    default='none'
+)
 def add(calendar, start, end, title, attendees, status, send_updates):
     flags = {
         'start': stringify(validate_date(start), add_timezone=True),
