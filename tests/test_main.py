@@ -1,8 +1,9 @@
-import pytest
-
-from click.testing import CliRunner
 from unittest.mock import patch
-from gcalcli.main import configure, main, ls
+
+import pytest
+from click.testing import CliRunner
+
+from gcalcli.main import configure, ls, main
 
 
 @pytest.fixture

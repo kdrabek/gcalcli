@@ -1,11 +1,11 @@
-import pytest
-
-from click import exceptions
 from datetime import datetime
+
+import pytest
 import pytz
+from click import exceptions
 
 from gcalcli.events.helpers import (
-    split_by, to_table, validate_date, convert_date
+    convert_date, split_by, to_table, validate_date
 )
 
 

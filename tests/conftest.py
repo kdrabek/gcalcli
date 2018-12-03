@@ -1,5 +1,4 @@
 import pytest
-
 from terminaltables import AsciiTable
 
 from gcalcli.events.helpers import HEADERS

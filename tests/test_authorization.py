@@ -2,10 +2,11 @@ import json
 from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
+from google_auth_oauthlib.flow import Flow
+
 from gcalcli.authorization import (
     SCOPES, create_credentials, load_credentials, open_file
 )
-from google_auth_oauthlib.flow import Flow
 
 
 @pytest.fixture

@@ -1,7 +1,7 @@
-import click
 from textwrap import wrap
-from dateparser import parse
 
+import click
+from dateparser import parse
 from terminaltables import AsciiTable
 
 HEADERS = [
