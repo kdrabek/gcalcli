@@ -1,4 +1,8 @@
+import logging
+
 PRIMARY_CALENDAR_ID = 'primary'
+
+logger = logging.getLogger(__name__)
 
 
 def get_events(client, filters):
@@ -28,7 +32,7 @@ def create_event(client, payload):
         event = client.events().insert(
             calendarId=PRIMARY_CALENDAR_ID, body=payload).execute()
     except Exception as e:
-        print("Exception occurred", e)
-        return None
+        logger.exception(f'Exception occurred: {e}')
+        return
     else:
         return event

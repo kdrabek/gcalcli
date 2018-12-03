@@ -21,31 +21,27 @@ def split_by(s, len=45):
     return '\n'.join(wrap(s, len))
 
 
-def is_all_day(d):
-    # this is a bit naive approach, because it will fail when someone wants
-    # to create an event from midnight to midnight the next day
-    return d.hour == 0 and d.minute == 0
+def convert_date(d, to_dict=False):
+    if not to_dict:
+        return d.strftime("%Y-%m-%dT%H:%M:%S%z")
 
+    result = {
+        'timezone': d.tzinfo.zone
+    }
 
-def stringify(d, add_timezone=False):
-    result = {}
-
-    if is_all_day(d):
+    if d.hour == 0 and d.minute == 0:
+        # this is a bit naive approach, because it will fail when someone
+        # wants to create an event from midnight to midnight the next day
         result['date'] = d.strftime("%Y-%m-%d")
     else:
         result['dateTime'] = d.strftime("%Y-%m-%dT%H:%M:%S%z")
-
-    if add_timezone:
-        result['timezone'] = d.tzinfo.zone
-
     return result
 
 
-def stringify2(d):
-    return d.strftime("%Y-%m-%dT%H:%M:%S%z")
+def validate_date(ctx, param, value):
+    if value is None:
+        return
 
-
-def validate_date(value):
     parsed = parse(value, settings={
         'RETURN_AS_TIMEZONE_AWARE': True,
         'PREFER_DAY_OF_MONTH': 'first',

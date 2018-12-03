@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock
 from gcalcli.events.api import get_events
-from gcalcli.events.helpers import validate_date, stringify2
+from gcalcli.events.helpers import validate_date
 
 
 @pytest.fixture
@@ -15,8 +15,8 @@ def mock_client(event_json):
 @pytest.fixture
 def flags():
     return {
-        'timeMin': stringify2(validate_date('01-11-2018')),
-        'timeMax': stringify2(validate_date('05-11-2018')),
+        'timeMin': '2018-12-03T20:00:00+0124',
+        'timeMax': '2018-12-03T20:00:00+0124',
         'filter': None,
         'showDeleted': True,
     }
