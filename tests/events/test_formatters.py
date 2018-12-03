@@ -9,7 +9,7 @@ def test_format_create_event():
     timezone = pytz.timezone('Europe/Warsaw')
     flags = {
         'start': datetime(2018, 12, 3, 20, 0, 0, tzinfo=timezone),
-        'end': datetime(2018, 12, 3, 21, 0, 0,tzinfo=timezone),
+        'end': datetime(2018, 12, 3, 21, 0, 0, tzinfo=timezone),
         'status': 'confirmed',
         'send_updates': True,
         'summary': 'test event',

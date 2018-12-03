@@ -1,7 +1,6 @@
 import pytest
 from unittest.mock import MagicMock
 from gcalcli.events.api import get_events
-from gcalcli.events.helpers import validate_date
 
 
 @pytest.fixture

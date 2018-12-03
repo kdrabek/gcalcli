@@ -1,5 +1,5 @@
 import pytest
-import click
+
 from click.testing import CliRunner
 from unittest.mock import patch
 from gcalcli.main import configure, main, ls

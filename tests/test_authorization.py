@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 from gcalcli.authorization import (
-    SCOPES, create_credentials, load_credentials, open_file, save_file
+    SCOPES, create_credentials, load_credentials, open_file
 )
 from google_auth_oauthlib.flow import Flow
 
@@ -35,7 +35,7 @@ def token_json():
 @pytest.fixture
 def mock_mkdir():
     path = 'gcalcli.authorization.Path'
-    with patch(path) as m:
+    with patch(path):
         yield
 
 
@@ -74,7 +74,6 @@ def test_open_file_with_formatter(mock_open_function):
 def test_create_credentials(flow, token_json):
     credentials = create_credentials(token_json, flow, scopes=SCOPES)
 
-    client_config = flow.client_config
     assert_credentials(credentials, token_json, flow)
 
 

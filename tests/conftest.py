@@ -2,7 +2,7 @@ import pytest
 
 from terminaltables import AsciiTable
 
-from gcalcli.events.helpers import to_table, validate_date, HEADERS
+from gcalcli.events.helpers import HEADERS
 
 
 @pytest.fixture

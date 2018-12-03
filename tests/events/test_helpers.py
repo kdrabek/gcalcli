@@ -39,16 +39,15 @@ def test_validate_date():
 
 def test_validate_date_unknown_lang():
     with pytest.raises(exceptions.BadParameter):
-        result = validate_date({}, 'start', 'abcd xyz')
+        validate_date({}, 'start', 'abcd xyz')
 
 
 def test_validate_date_incorrect_date():
     with pytest.raises(exceptions.BadParameter):
-        result = validate_date({}, 'start', '32 Nov 2018')
+        validate_date({}, 'start', '32 Nov 2018')
 
 
 def test_convert_date_to_string():
-    timezone = pytz.timezone('Europe/Warsaw')
     test_date = datetime(2018, 12, 3, 20, 0, 0)
     assert convert_date(test_date) == '2018-12-03T20:00:00'
 

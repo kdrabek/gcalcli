@@ -1,4 +1,4 @@
-from gcalcli.events.helpers import split_by, convert_date, validate_date
+from gcalcli.events.helpers import split_by, convert_date
 from toolz.dicttoolz import get_in
 
 EVENT_KIND_MAPPING = {

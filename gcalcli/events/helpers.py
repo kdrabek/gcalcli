@@ -1,8 +1,6 @@
 import click
 from textwrap import wrap
 from dateparser import parse
-from datetime import datetime
-import time
 
 from terminaltables import AsciiTable
 

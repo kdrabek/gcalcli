@@ -6,9 +6,7 @@ from gcalcli.authorization import (
 )
 from gcalcli.events import formatters
 from gcalcli.events.api import create_event, get_events
-from gcalcli.events.helpers import (
-    convert_date, to_table, validate_date
-)
+from gcalcli.events.helpers import to_table, validate_date
 
 
 @click.group()
@@ -40,7 +38,10 @@ def configure():
 @click.command()
 @click.pass_obj
 @click.option('--start', '-s', required=True, type=str, callback=validate_date)
-@click.option('--end', '-e', required=False, type=str, callback=validate_date, default=None)
+@click.option(
+    '--end', '-e', required=False, type=str,
+    callback=validate_date, default=None
+)
 @click.option('--filter', '-f', 'filter_', required=False, default=None)
 @click.option('--show-deleted/--no-show-deleted', default=True)
 def ls(calendar, start, end, filter_, show_deleted):
