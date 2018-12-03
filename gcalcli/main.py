@@ -1,13 +1,14 @@
 import click
-
 from googleapiclient.discovery import build
 
 from gcalcli.authorization import (
-    is_authentication_setup, load_credentials, setup_authentication)
-from gcalcli.events import specs
+    is_authentication_setup, load_credentials, setup_authentication
+)
+from gcalcli.events import formatters
+from gcalcli.events.api import create_event, get_events
 from gcalcli.events.helpers import (
-    to_table, validate_date, stringify, stringify2)
-from gcalcli.events.api import get_events, create_event
+    convert_date, to_table, validate_date
+)
 
 
 @click.group()
@@ -38,27 +39,27 @@ def configure():
 
 @click.command()
 @click.pass_obj
-@click.option('--start', '-s', required=True, type=str)
-@click.option('--end', '-e', required=False, type=str, default=None)
+@click.option('--start', '-s', required=True, type=str, callback=validate_date)
+@click.option('--end', '-e', required=False, type=str, callback=validate_date, default=None)
 @click.option('--filter', '-f', 'filter_', required=False, default=None)
 @click.option('--show-deleted/--no-show-deleted', default=True)
 def ls(calendar, start, end, filter_, show_deleted):
-    flags = {
-        'timeMin': stringify2(validate_date(start)),
-        'timeMax': stringify2(validate_date(end)) if end else None,
+    flags = formatters.format_list_events_request({
+        'start': start,
+        'end': end,
         'filter': filter_,
-        'showDeleted': show_deleted,
-    }
+        'show_deleted': show_deleted,
+    })
 
     events = get_events(calendar, flags)
-    parsed = specs.parse_events_list(events)
-    click.echo(to_table(parsed))
+    formatted = formatters.format_events_list_response(events)
+    click.echo(to_table(formatted))
 
 
 @click.command()
 @click.pass_obj
-@click.option('--start', '-s', required=True, type=str)
-@click.option('--end', '-e', required=True, type=str)
+@click.option('--start', '-s', required=True, type=str, callback=validate_date)
+@click.option('--end', '-e', required=True, type=str, callback=validate_date)
 @click.option('--title', '-t', required=True)
 @click.option('--attendees', '-a', required=False, multiple=True)
 @click.option(
@@ -72,18 +73,19 @@ def ls(calendar, start, end, filter_, show_deleted):
     default='none'
 )
 def add(calendar, start, end, title, attendees, status, send_updates):
-    flags = {
-        'start': stringify(validate_date(start), add_timezone=True),
-        'end': stringify(validate_date(end), add_timezone=True),
+    formatted = formatters.format_create_event_request({
+        'start': start,
+        'end': end,
         'summary': title,
         'attendees': attendees,
         'status': status,
-        'sendUpdates': send_updates
-    }
-    parsed = specs.serialize_create_event(flags)
-    event = create_event(calendar, parsed)
+        'send_updates': send_updates
+    })
+
+    event = create_event(calendar, formatted)
     if event:
-        click.echo(f'event added: {event}')
+        eid = event['id']
+        click.echo(f'event added: {eid}')
     else:
         click.echo('something went wrong')
 
@@ -91,7 +93,3 @@ def add(calendar, start, end, title, attendees, status, send_updates):
 main.add_command(ls)
 main.add_command(add)
 main.add_command(configure)
-
-
-if __name__ == "__main__":
-    main()
