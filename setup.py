@@ -41,7 +41,7 @@ setup(
         'pytest-runner'
     ],
     tests_require=tests_requirements,
-    entry_points = {
+    entry_points={
         'console_scripts': ['gcalcli=gcalcli.main:main'],
     }
 )
