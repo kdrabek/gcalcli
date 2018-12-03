@@ -1,13 +1,12 @@
 import click
-
-from glom import glom
 from googleapiclient.discovery import build
 
 from gcalcli.authorization import (
-    is_authentication_setup, load_credentials, setup_authentication)
-from gcalcli.events import specs
+    is_authentication_setup, load_credentials, setup_authentication
+)
+from gcalcli.events import formatters
+from gcalcli.events.api import create_event, get_events
 from gcalcli.events.helpers import to_table, validate_date
-from gcalcli.events.api import get_events
 
 
 @click.group()
@@ -19,10 +18,11 @@ def main(ctx):
         ctx.obj = calendar
 
     if not is_authentication_setup() and ctx.invoked_subcommand != 'configure':
-        click.echo('Looks like the app is not configured. Please run $ gcalcli configure')
+        click.echo(
+            'Looks like the app is not configured.'
+            'Please run "gcalcli configure"'
+        )
         ctx.exit(code=1)
-
-    ctx.exit(code=0)
 
 
 @click.command()
@@ -38,32 +38,59 @@ def configure():
 @click.command()
 @click.pass_obj
 @click.option('--start', '-s', required=True, type=str, callback=validate_date)
-@click.option('--end', '-e', required=False, type=str, default=None, callback=validate_date)
+@click.option(
+    '--end', '-e', required=False, type=str,
+    callback=validate_date, default=None
+)
 @click.option('--filter', '-f', 'filter_', required=False, default=None)
 @click.option('--show-deleted/--no-show-deleted', default=True)
 def ls(calendar, start, end, filter_, show_deleted):
-    flags = {
-        'timeMin': start,
-        'timeMax': end,
+    flags = formatters.format_list_events_request({
+        'start': start,
+        'end': end,
         'filter': filter_,
-        'showDeleted': show_deleted,
-    }
-    events = get_events(calendar, flags)
-    parsed = glom(events, [specs.event])
-    click.echo(to_table(parsed))
+        'show_deleted': show_deleted,
+    })
 
+    events = get_events(calendar, flags)
+    formatted = formatters.format_events_list_response(events)
+    click.echo(to_table(formatted))
 
 
 @click.command()
 @click.pass_obj
-def add(calendar):
-    click.echo('$ gcalcli add')
+@click.option('--start', '-s', required=True, type=str, callback=validate_date)
+@click.option('--end', '-e', required=True, type=str, callback=validate_date)
+@click.option('--title', '-t', required=True)
+@click.option('--attendees', '-a', required=False, multiple=True)
+@click.option(
+    '--status',
+    type=click.Choice(['confirmed', 'tentative', 'cancelled']),
+    default='confirmed'
+)
+@click.option(
+    '--send-updates',
+    type=click.Choice(['all', 'none']),
+    default='none'
+)
+def add(calendar, start, end, title, attendees, status, send_updates):
+    formatted = formatters.format_create_event_request({
+        'start': start,
+        'end': end,
+        'summary': title,
+        'attendees': attendees,
+        'status': status,
+        'send_updates': send_updates
+    })
+
+    event = create_event(calendar, formatted)
+    if event:
+        eid = event['id']
+        click.echo(f'event added: {eid}')
+    else:
+        click.echo('something went wrong')
 
 
 main.add_command(ls)
 main.add_command(add)
 main.add_command(configure)
-
-
-if __name__ == "__main__":
-    main()

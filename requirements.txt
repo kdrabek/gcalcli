@@ -4,6 +4,6 @@ oauth2client
 wheel
 setuptools
 terminaltables
-glom
 click
 dateparser
+toolz

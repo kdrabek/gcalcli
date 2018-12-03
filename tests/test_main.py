@@ -1,8 +1,9 @@
-import pytest
-import click
-from click.testing import CliRunner
 from unittest.mock import patch
-from gcalcli.main import configure, main, ls
+
+import pytest
+from click.testing import CliRunner
+
+from gcalcli.main import configure, ls, main
 
 
 @pytest.fixture
@@ -16,7 +17,7 @@ def runner():
 def test_main_when_all_setup(mock_is_setup, mock_load, mock_build, runner):
     result = runner.invoke(main, ['ls'])
 
-    assert result.exit_code == 0
+    assert result.exit_code == 2
     mock_load.assert_called_once_with()
     mock_build.assert_called_once_with(
         'calendar', 'v3', credentials=mock_load.return_value
@@ -54,7 +55,9 @@ def test_configure_when_fail(mock_is_setup, mock_setup, runner):
 @patch('gcalcli.main.get_events')
 def test_events_ls(mock_get_events, runner, event_json, ascii_table):
     mock_get_events.return_value = [event_json]
-    result = runner.invoke(ls, ['--start', '01-11-2018', '--end', '30-11-2018'])
+    result = runner.invoke(
+        ls, ['--start', '01-11-2018', '--end', '30-11-2018']
+    )
 
     assert result.output == ascii_table + '\n'
     assert result.exit_code == 0
@@ -64,7 +67,9 @@ def test_events_ls(mock_get_events, runner, event_json, ascii_table):
 def test_events_ls_empty_table(
         mock_get_events, runner, event_json, ascii_table_headers_only):
     mock_get_events.return_value = []
-    result = runner.invoke(ls, ['--start', '01-11-2018', '--end', '30-11-2018'])
+    result = runner.invoke(
+        ls, ['--start', '01-11-2018', '--end', '30-11-2018']
+    )
 
     assert result.output == ascii_table_headers_only + '\n'
     assert result.exit_code == 0

@@ -1,14 +1,17 @@
+import logging
+
 PRIMARY_CALENDAR_ID = 'primary'
 
+logger = logging.getLogger(__name__)
 
-def get_events(client, opts):
-    title_filter = opts.pop('filter')
-    opts['calendarId'] = PRIMARY_CALENDAR_ID
 
+def get_events(client, filters):
+    title_filter = filters.pop('filter')
     page_token = None
     while True:
-        opts['pageToken'] = page_token
-        events = client.events().list(**opts).execute()
+        filters['pageToken'] = page_token
+        events = client.events().list(
+            calendarId=PRIMARY_CALENDAR_ID, **filters).execute()
         if not events:
             return []
 
@@ -24,5 +27,12 @@ def get_events(client, opts):
             break
 
 
-def create_event(client, opts):
-    pass
+def create_event(client, payload):
+    try:
+        event = client.events().insert(
+            calendarId=PRIMARY_CALENDAR_ID, body=payload).execute()
+    except Exception as e:
+        logger.exception(f'Exception occurred: {e}')
+        return
+    else:
+        return event

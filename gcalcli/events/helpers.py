@@ -1,9 +1,7 @@
-import click
 from textwrap import wrap
-from dateparser import parse
-from datetime import datetime
-import time
 
+import click
+from dateparser import parse
 from terminaltables import AsciiTable
 
 HEADERS = [
@@ -21,15 +19,32 @@ def split_by(s, len=45):
     return '\n'.join(wrap(s, len))
 
 
+def convert_date(d, to_dict=False):
+    if not to_dict:
+        return d.strftime("%Y-%m-%dT%H:%M:%S%z")
+
+    result = {
+        'timezone': d.tzinfo.zone
+    }
+
+    if d.hour == 0 and d.minute == 0:
+        # this is a bit naive approach, because it will fail when someone
+        # wants to create an event from midnight to midnight the next day
+        result['date'] = d.strftime("%Y-%m-%d")
+    else:
+        result['dateTime'] = d.strftime("%Y-%m-%dT%H:%M:%S%z")
+    return result
+
+
 def validate_date(ctx, param, value):
-    try:
-        parsed = parse(value, settings={
-            'RETURN_AS_TIMEZONE_AWARE': True,
-            'PREFER_DAY_OF_MONTH': 'first',
-            'DATE_ORDER': 'DMY'
-        })
-        return parsed.strftime("%Y-%m-%dT%H:%M:%S%z")
-    except (ValueError, AttributeError):
-        # value error -> unknown lang
-        # attribute error -> parse returns None (cannot parse)
+    if value is None:
+        return
+
+    parsed = parse(value, settings={
+        'RETURN_AS_TIMEZONE_AWARE': True,
+        'PREFER_DAY_OF_MONTH': 'first',
+        'DATE_ORDER': 'DMY'
+    })
+    if parsed is None:
         raise click.BadParameter(value)
+    return parsed

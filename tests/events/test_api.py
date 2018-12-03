@@ -1,12 +1,13 @@
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
+
 from gcalcli.events.api import get_events
-from gcalcli.events.helpers import validate_date
 
 
 @pytest.fixture
 def mock_client(event_json):
-    resp ={'items': [event_json]}
+    resp = {'items': [event_json]}
     client = MagicMock()
     client.events.return_value.list.return_value.execute.return_value = resp
     return client
@@ -15,8 +16,8 @@ def mock_client(event_json):
 @pytest.fixture
 def flags():
     return {
-        'timeMin': validate_date(None, 'start', '01-11-2018'),
-        'timeMax': validate_date(None, 'end', '05-11-2018'),
+        'timeMin': '2018-12-03T20:00:00+0124',
+        'timeMax': '2018-12-03T20:00:00+0124',
         'filter': None,
         'showDeleted': True,
     }
@@ -42,7 +43,7 @@ def test_get_events_with_valid_title_filter(mock_client, event_json, flags):
     assert_mock_calls(mock_client, expected_count=1)
 
 
-def test_get_events_with_invalid_title_filter(mock_client, event_json,flags):
+def test_get_events_with_invalid_title_filter(mock_client, event_json, flags):
     flags['filter'] = 'some title'
     events = get_events(mock_client, flags)
 
@@ -51,7 +52,7 @@ def test_get_events_with_invalid_title_filter(mock_client, event_json,flags):
 
 
 def test_get_events_calls_next_page(mock_client, event_json, flags):
-    resp_with_token ={'items': [event_json], 'nextPageToken': 'token'}
+    resp_with_token = {'items': [event_json], 'nextPageToken': 'token'}
     resp = {'items': [event_json]}
     mock_client.events.return_value.list.return_value.execute.side_effect = [
         resp_with_token, resp

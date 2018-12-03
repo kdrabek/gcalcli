@@ -38,7 +38,10 @@ setup(
     author_email='kdrabek@gmail.com',
     install_requires=install_requirements,
     setup_requires=[
-        'pytest-runner==2.9'
+        'pytest-runner'
     ],
-    tests_require=tests_requirements
+    tests_require=tests_requirements,
+    entry_points={
+        'console_scripts': ['gcalcli=gcalcli.main:main'],
+    }
 )

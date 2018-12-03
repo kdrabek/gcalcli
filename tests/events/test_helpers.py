@@ -1,8 +1,12 @@
-import pytest
+from datetime import datetime
 
+import pytest
+import pytz
 from click import exceptions
 
-from gcalcli.events.helpers import split_by, to_table, validate_date
+from gcalcli.events.helpers import (
+    convert_date, split_by, to_table, validate_date
+)
 
 
 @pytest.mark.parametrize('string,result', [
@@ -28,15 +32,37 @@ def test_to_table(parsed_event, ascii_table):
 
 
 def test_validate_date():
-    result = validate_date(None, 'start','January 2018')
-    assert result == '2018-01-01T00:00:00+0000'
+    result = validate_date({}, 'start', 'January 2018')
+    assert isinstance(result, datetime)
+    assert str(result) == '2018-01-01 00:00:00+00:00'
 
 
 def test_validate_date_unknown_lang():
     with pytest.raises(exceptions.BadParameter):
-        result = validate_date(None, 'start','abcd xyz')
+        validate_date({}, 'start', 'abcd xyz')
 
 
 def test_validate_date_incorrect_date():
     with pytest.raises(exceptions.BadParameter):
-        result = validate_date(None, 'start','32 Nov 2018')
+        validate_date({}, 'start', '32 Nov 2018')
+
+
+def test_convert_date_to_string():
+    test_date = datetime(2018, 12, 3, 20, 0, 0)
+    assert convert_date(test_date) == '2018-12-03T20:00:00'
+
+
+def test_convert_date_to_dict_whole_day_events():
+    timezone = pytz.timezone('Europe/Warsaw')
+    test_date = datetime(2018, 12, 3, 0, 0, 0, tzinfo=timezone)
+    assert convert_date(test_date, to_dict=True) == {
+        'date': '2018-12-03', 'timezone': 'Europe/Warsaw'
+    }
+
+
+def test_convert_date_to_dict():
+    timezone = pytz.timezone('Europe/Warsaw')
+    test_date = datetime(2018, 12, 3, 20, 0, 0, tzinfo=timezone)
+    assert convert_date(test_date, to_dict=True) == {
+        'dateTime': '2018-12-03T20:00:00+0124', 'timezone': 'Europe/Warsaw'
+    }
